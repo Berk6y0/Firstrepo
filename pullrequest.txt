@@ -1,0 +1,50 @@
+/BBADANOZ payment without register 
+function createCommand(el) {
+    if (!_.isElement(el)) {
+        return null;
+    }
+
+    el = $(el);
+
+    var cmd = {
+        src: el,
+        type: el.data("type") || "cart", // or "wishlist" or "compare",
+        action: el.data("action") || "add", // or "remove" or "addfromwishlist" or "addfromcart"
+        href: el.data("href") || el.attr("href"),
+        data: {} // handled further below
+    };
+
+    if (el.data("form-selector")) {
+        var form = $(el.data("form-selector"));
+
+        if (!form[0].reportValidity()) {
+            return null;
+        }
+
+        var isGuestCheckout = form.find("input[name='isGuestCheckout']").val() == "true";
+
+        if (isGuestCheckout) {
+            cmd.data = {
+                // guest checkout data
+            };
+        } else {
+            var str = form.serialize();
+
+            // HACK (MC)!
+            // we changed the ModelType of the _AddToCart
+            // from ...ProductModel.AddToCart to .ProductModel.
+            // Therefore input names are not in the form anymore as the ShoppingCartController 
+            // expects them. Hacking here ist much easier than refactoring the controller method.
+            // But change this in future of couse.
+            var arr = str.split(".");
+            if (arr.length == 3 && arr[1] == "AddToCart") {
+                str = arr[0] + "." + arr[2];
+            }
+
+            cmd.data = str;
+        }
+    }
+
+    return cmd;
+}
+In this example, we added a new variable isGuestCheckout to check if the user has selected the guest checkout option. If the user has selected the guest checkout option, we create a new object for the data property with the necessary data for the guest checkout. If the user has not selected the guest checkout option, we proceed with the original code for creating the data object.

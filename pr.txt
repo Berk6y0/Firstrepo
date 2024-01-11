@@ -1,0 +1,24 @@
+// ... (existing code)
+
+success: function (response) {
+    if (response.redirect) {
+        // Modify the redirection logic based on your requirements
+        if (response.redirect === 'login') {
+            // Redirect to the login page if needed
+            window.location.href = '/login';
+        } else {
+            // Handle other redirection scenarios
+            window.location.href = response.redirect;
+        }
+        return false;
+    }
+
+    // ... (existing code)
+},
+
+error: function (jqXHR, textStatus, errorThrown) {
+    // ... (existing code)
+    window.location.href = '/error'; // Redirect to an error page if needed
+},
+
+// ... (existing code)
